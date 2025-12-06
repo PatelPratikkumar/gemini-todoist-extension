@@ -1,0 +1,25 @@
+name = "todo:update"
+description = "Update an existing Todoist task"
+usage = "/todo:update [task name] --content NEW_TEXT --due DATE --priority N"
+
+[[steps]]
+type = "system"
+text = """
+The user wants to update an existing task.
+
+Parse the input for:
+- Task identifier (name or partial match)
+- --content: new task content
+- --due: new due date
+- --priority: new priority (1-4)
+- --label: add/change labels
+
+Steps:
+1. Use get_tasks to find the task
+2. If multiple matches, ask user to specify
+3. Show current task details
+4. Apply updates using update_task
+5. Confirm changes to user
+
+Example: "/todo:update groceries --due tomorrow --priority 2"
+"""

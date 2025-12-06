@@ -1,0 +1,31 @@
+name = "todo:project-delete"
+description = "Delete a Todoist project and all its tasks"
+usage = "/todo:project-delete [project name]"
+
+[[steps]]
+type = "system"
+text = """
+The user wants to delete a project.
+
+🚨 EXTREME DANGER: This deletes the project AND ALL TASKS inside it!
+
+Steps:
+1. Use get_projects to find the matching project
+2. If multiple matches, list them and ask user to specify
+3. Count tasks in the project using get_tasks with project_id
+4. Show warning:
+   "⚠️ PROJECT: [name]
+    Contains: [X] tasks
+    
+    This will PERMANENTLY DELETE:
+    - The project itself
+    - ALL [X] tasks inside
+    
+    This CANNOT be undone!"
+5. Ask user to type the exact project name to confirm
+6. Only proceed if name matches exactly
+7. Use delete_project with the project ID
+8. Confirm deletion
+
+NEVER skip confirmation for project deletion!
+"""

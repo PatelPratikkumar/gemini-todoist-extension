@@ -1,0 +1,28 @@
+name = "todo:projects"
+description = "List all Todoist projects"
+usage = "/todo:projects"
+
+[[steps]]
+type = "system"
+text = """
+The user wants to see all their Todoist projects.
+
+Steps:
+1. Call get_projects to retrieve all projects
+2. Format output as a structured list showing:
+   - Project name
+   - Color indicator (emoji or text)
+   - Whether it's a favorite (⭐)
+   - View style (list/board)
+
+Group projects by:
+- Favorites first
+- Then alphabetically or by order
+
+Example output:
+📁 Projects
+├── ⭐ Work (blue, board view)
+├── ⭐ Personal (green, list view)
+├── Shopping (orange, list view)
+└── Archive (grey, list view)
+"""

@@ -1,0 +1,108 @@
+{
+  "name": "todoist-extension",
+  "version": "1.0.0",
+  "description": "Full Todoist task management for Gemini CLI - manage tasks, projects, sections, labels, and comments",
+  "mcpServers": {
+    "todoist": {
+      "command": "node",
+      "args": ["dist/server.js"],
+      "cwd": "${extensionPath}",
+      "env": {
+        "TODOIST_API_TOKEN": "${TODOIST_API_TOKEN}"
+      }
+    }
+  },
+  "commands": [
+    {
+      "name": "todo:add",
+      "description": "Add a new task to Todoist",
+      "usage": "/todo:add [task] [@project] [!priority] [#label] [due:date]",
+      "source": "commands/tasks/add.toml"
+    },
+    {
+      "name": "todo:list",
+      "description": "List tasks with optional filters",
+      "usage": "/todo:list [--project NAME] [--priority 1-4] [--filter QUERY]",
+      "source": "commands/tasks/list.toml"
+    },
+    {
+      "name": "todo:complete",
+      "description": "Mark a task as complete",
+      "usage": "/todo:complete [task name]",
+      "source": "commands/tasks/complete.toml"
+    },
+    {
+      "name": "todo:update",
+      "description": "Update an existing task",
+      "usage": "/todo:update [task] --content TEXT --due DATE --priority N",
+      "source": "commands/tasks/update.toml"
+    },
+    {
+      "name": "todo:delete",
+      "description": "Delete a task permanently",
+      "usage": "/todo:delete [task name]",
+      "source": "commands/tasks/delete.toml"
+    },
+    {
+      "name": "todo:reopen",
+      "description": "Reopen a completed task",
+      "usage": "/todo:reopen [task name]",
+      "source": "commands/tasks/reopen.toml"
+    },
+    {
+      "name": "todo:projects",
+      "description": "List all projects",
+      "usage": "/todo:projects",
+      "source": "commands/projects/list.toml"
+    },
+    {
+      "name": "todo:project-create",
+      "description": "Create a new project",
+      "usage": "/todo:project-create [name] --color COLOR --view list|board",
+      "source": "commands/projects/create.toml"
+    },
+    {
+      "name": "todo:project-delete",
+      "description": "Delete a project and all its tasks",
+      "usage": "/todo:project-delete [project name]",
+      "source": "commands/projects/delete.toml"
+    },
+    {
+      "name": "todo:sections",
+      "description": "List sections in a project",
+      "usage": "/todo:sections [project name]",
+      "source": "commands/sections/list.toml"
+    },
+    {
+      "name": "todo:section-create",
+      "description": "Create a new section in a project",
+      "usage": "/todo:section-create [name] --project PROJECT",
+      "source": "commands/sections/create.toml"
+    },
+    {
+      "name": "todo:labels",
+      "description": "List all labels",
+      "usage": "/todo:labels",
+      "source": "commands/labels/list.toml"
+    },
+    {
+      "name": "todo:label-create",
+      "description": "Create a new label",
+      "usage": "/todo:label-create [name] --color COLOR",
+      "source": "commands/labels/create.toml"
+    },
+    {
+      "name": "todo:comments",
+      "description": "View comments on a task",
+      "usage": "/todo:comments [task name]",
+      "source": "commands/comments/list.toml"
+    },
+    {
+      "name": "todo:comment-add",
+      "description": "Add a comment to a task",
+      "usage": "/todo:comment-add [task] --message TEXT",
+      "source": "commands/comments/add.toml"
+    }
+  ],
+  "contextPath": "GEMINI.md"
+}

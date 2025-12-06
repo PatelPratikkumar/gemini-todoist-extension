@@ -1,0 +1,21 @@
+name = "todo:section-create"
+description = "Create a new section in a project"
+usage = "/todo:section-create [section name] --project PROJECT_NAME"
+
+[[steps]]
+type = "system"
+text = """
+The user wants to create a new section in a project.
+
+Parse the input for:
+- Section name (required)
+- --project: project name (required)
+- --order: position in the project
+
+Steps:
+1. Use get_projects to find the project ID
+2. Call create_section with name and project_id
+3. Confirm creation
+
+Example: "/todo:section-create In Progress --project Work"
+"""
