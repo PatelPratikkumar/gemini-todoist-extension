@@ -2,20 +2,12 @@ name = "todo:sections"
 description = "List sections in a project"
 usage = "/todo:sections [project name]"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to see sections within a project.
+prompt = """
+List sections in a project.
 
-Steps:
-1. Use get_projects to find the project by name
-2. Call get_sections with the project_id
-3. Format output showing section names in order
+1. Find project with get_projects
+2. Call get_sections with project_id
+3. Format as ordered list
 
-Example output:
-📂 Work Project Sections:
-├── Backlog
-├── In Progress
-├── Review
-└── Done
+User input: {{args}}
 """

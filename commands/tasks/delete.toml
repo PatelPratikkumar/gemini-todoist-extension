@@ -1,23 +1,18 @@
 name = "todo:delete"
-description = "Delete a Todoist task permanently"
+description = "Delete a task permanently"
 usage = "/todo:delete [task name]"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to delete a task.
+prompt = """
+Delete a task. DANGER: This is PERMANENT!
 
-🚨 DANGER: This is PERMANENT and cannot be undone!
+1. Use get_tasks to find the task
+2. Show exact task name and project
+3. Warn: "This will PERMANENTLY delete this task. Cannot be undone."
+4. Ask user to type "DELETE" to confirm
+5. Only proceed if confirmed exactly
+6. Call delete_task
 
-Steps:
-1. Use get_tasks to find the matching task
-2. If multiple matches, list them and ask user to specify
-3. Show the exact task: "Task: [name] in [project]"
-4. Warn: "⚠️ This will PERMANENTLY delete this task. This cannot be undone."
-5. Ask user to type "DELETE" to confirm
-6. Only proceed if user types exactly "DELETE"
-7. Use delete_task with the task ID
-8. Confirm deletion
+NEVER skip confirmation!
 
-NEVER skip the confirmation step!
+User input: {{args}}
 """

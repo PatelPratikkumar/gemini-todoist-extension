@@ -1,24 +1,15 @@
 name = "todo:complete"
 description = "Mark a Todoist task as complete"
-usage = "/todo:complete [task name or partial match]"
+usage = "/todo:complete [task name]"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to mark a task as complete.
+prompt = """
+Mark a task as complete. CONFIRM before completing!
 
-⚠️ CONFIRMATION REQUIRED before completing!
+1. Use get_tasks to find matching tasks
+2. If multiple matches, list them and ask user to specify
+3. Show exact task and ask: "Mark this complete? (yes/no)"
+4. Only if confirmed, call complete_task
+5. Confirm completion
 
-Steps:
-1. Use get_tasks to find tasks matching the user's description
-2. If multiple matches found, list them and ask user to specify
-3. Show the exact task name and ask: "Mark this task as complete? (yes/no)"
-4. Only if user confirms, use complete_task with the task ID
-5. Confirm completion to user
-
-Note: Recurring tasks will automatically reschedule to their next occurrence.
-
-If no match found:
-- Suggest checking spelling
-- Offer to list all tasks
+User input: {{args}}
 """

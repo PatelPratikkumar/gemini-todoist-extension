@@ -1,18 +1,14 @@
 name = "todo:reopen"
-description = "Reopen a completed Todoist task"
+description = "Reopen a completed task"
 usage = "/todo:reopen [task name]"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to reopen a completed task.
+prompt = """
+Reopen a completed task.
 
-Note: This works on tasks that were recently completed.
+1. Find the task
+2. Ask for confirmation
+3. Call reopen_task
+4. Confirm task is active again
 
-Steps:
-1. Use get_tasks to find the task (may need to search completed tasks)
-2. Show the task details
-3. Ask for confirmation: "Reopen this task? (yes/no)"
-4. Use reopen_task with the task ID
-5. Confirm the task is now active again
+User input: {{args}}
 """

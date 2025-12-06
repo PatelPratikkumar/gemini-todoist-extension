@@ -1,21 +1,13 @@
 name = "todo:comment-add"
 description = "Add a comment to a task"
-usage = "/todo:comment-add [task name] --message YOUR_COMMENT"
+usage = "/todo:comment-add [task] --message TEXT"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to add a comment to a task.
-
-Parse the input for:
+prompt = """
+Add a comment to a task. Parse input for:
 - Task name/identifier
-- --message or quoted text: the comment content
+- --message or quoted text: comment content
 
-Steps:
-1. Use get_tasks to find the task
-2. If multiple matches, ask user to specify
-3. Call create_comment with task_id and content
-4. Confirm the comment was added
+Find task, call create_comment with task_id and content.
 
-Example: /todo:comment-add "Review proposal" --message "Added budget section"
+User input: {{args}}
 """

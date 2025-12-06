@@ -2,25 +2,17 @@ name = "todo:project-create"
 description = "Create a new Todoist project"
 usage = "/todo:project-create [name] --color COLOR --view list|board"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to create a new project.
-
-Parse the input for:
+prompt = """
+Create a new project. Parse input for:
 - Project name (required)
-- --color: project color (red, orange, yellow, green, blue, purple, etc.)
-- --view: list or board view style
+- --color: project color
+- --view: list or board
 - --favorite: mark as favorite
-- --parent: parent project name for nesting
+- --parent: parent project name
 
-Steps:
-1. If --parent specified, use get_projects to find parent ID
-2. Call create_project with the parameters
-3. Confirm creation with project details
+Call create_project and confirm creation.
 
-Available colors:
-berry_red, red, orange, yellow, olive_green, lime_green,
-green, mint_green, teal, sky_blue, light_blue, blue,
-grape, violet, lavender, magenta, salmon, charcoal, grey
+Colors: berry_red, red, orange, yellow, green, blue, grape, violet, grey
+
+User input: {{args}}
 """

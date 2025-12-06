@@ -2,27 +2,16 @@ name = "todo:add"
 description = "Quickly add a new Todoist task with natural language"
 usage = "/todo:add Buy groceries tomorrow @Shopping !2 #errands"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to add a task to Todoist using natural language.
+prompt = """
+Add a task to Todoist. Parse the input for:
+- Task content (main text)
+- @project - project name
+- !priority - level 1-4 (1=normal, 4=urgent)
+- #label - labels to attach
+- due:date or natural dates (tomorrow, Friday, next week)
 
-Parse the input for:
-- Task content (the main text)
-- @project - project name to add to
-- !priority - priority level 1-4 (1=normal, 4=urgent)  
-- #label - label names to attach
-- due:date or natural date words (tomorrow, Friday, next week)
+If @project specified, use get_projects to find the project ID first.
+Call create_task with parsed parameters and confirm creation.
 
-Steps:
-1. If @project specified, use get_projects to find the project ID
-2. Call create_task with the parsed parameters
-3. Confirm the task was created successfully
-
-Example input: "Buy milk tomorrow @Shopping !2 #groceries"
-→ content: "Buy milk"
-→ due_string: "tomorrow"
-→ project: Shopping
-→ priority: 2
-→ labels: ["groceries"]
+User input: {{args}}
 """

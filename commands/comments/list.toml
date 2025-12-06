@@ -2,21 +2,12 @@ name = "todo:comments"
 description = "View comments on a task"
 usage = "/todo:comments [task name]"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to see comments on a task.
+prompt = """
+View comments on a task.
 
-Steps:
-1. Use get_tasks to find the task
+1. Find task with get_tasks
 2. Call get_comments with task_id
-3. Format output showing:
-   - Comment content
-   - Posted date
-   - Author (if shared project)
+3. Format showing content and date
 
-Example output:
-💬 Comments on "Review proposal":
-├── [Dec 5] Added budget section
-└── [Dec 6] Waiting for client feedback
+User input: {{args}}
 """

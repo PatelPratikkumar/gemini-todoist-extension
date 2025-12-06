@@ -2,22 +2,13 @@ name = "todo:labels"
 description = "List all labels"
 usage = "/todo:labels"
 
-[[steps]]
-type = "system"
-text = """
-The user wants to see all their labels.
+prompt = """
+List all Todoist labels.
 
-Steps:
-1. Call get_labels
-2. Format output showing:
-   - Label name
-   - Color
-   - Whether it's a favorite
+Call get_labels and format showing:
+- Label name
+- Color
+- Favorite status
 
-Example output:
-🏷️ Labels:
-├── ⭐ urgent (red)
-├── work (blue)
-├── personal (green)
-└── errands (orange)
+User input: {{args}}
 """
