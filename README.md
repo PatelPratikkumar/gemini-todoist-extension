@@ -164,14 +164,14 @@ echo $TODOIST_API_TOKEN
 ### Option 1: Install from GitHub (Recommended)
 
 ```bash
-gemini extensions install https://github.com/YOUR_USERNAME/gemini-todoist-extension
+gemini extensions install https://github.com/PatelPratikkumar/gemini-todoist-extension
 ```
 
 ### Option 2: Install from Local Clone
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/gemini-todoist-extension.git
+git clone https://github.com/PatelPratikkumar/gemini-todoist-extension.git
 cd gemini-todoist-extension
 
 # Install dependencies
