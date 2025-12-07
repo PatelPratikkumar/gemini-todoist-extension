@@ -66,7 +66,7 @@ async function getProjectName(projectId: string): Promise<string> {
 const server = new Server(
   {
     name: "todoist-mcp-server",
-    version: "1.2.0",
+    version: "1.3.0",
   },
   {
     capabilities: {

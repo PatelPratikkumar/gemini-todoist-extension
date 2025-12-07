@@ -25,6 +25,7 @@ export function formatTask(task: TodoistTask): string {
   const lines: string[] = [];
   
   lines.push(`📌 **${task.content}**`);
+  lines.push(`   🆔 Task ID: ${task.id}`);
   
   if (task.description) {
     lines.push(`   📝 ${task.description}`);
@@ -50,6 +51,7 @@ export function formatTask(task: TodoistTask): string {
   }
   
   lines.push(`   ${details.join(" | ")}`);
+  lines.push(`   🔗 ${task.url}`);
   
   return lines.join("\n");
 }
@@ -63,8 +65,8 @@ export function formatTaskList(tasks: TodoistTask[], title?: string): string {
   const lines: string[] = [];
   
   lines.push(`📋 **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})\n`);
-  lines.push("| # | Task | Due | Priority | Labels |");
-  lines.push("|---|------|-----|----------|--------|");
+  lines.push("| # | ID | Task | Due | Priority | Labels |");
+  lines.push("|---|-----|------|-----|----------|--------|");
   
   tasks.forEach((task, index) => {
     const due = task.due 
@@ -74,11 +76,11 @@ export function formatTaskList(tasks: TodoistTask[], title?: string): string {
       : "—";
     const priority = PRIORITY_SHORT[task.priority] || "⚪ P4";
     const labels = task.labels?.length ? task.labels.join(", ") : "—";
-    const content = task.content.length > 40 
-      ? task.content.substring(0, 37) + "..." 
+    const content = task.content.length > 35 
+      ? task.content.substring(0, 32) + "..." 
       : task.content;
     
-    lines.push(`| ${index + 1} | ${content} | ${due} | ${priority} | ${labels} |`);
+    lines.push(`| ${index + 1} | ${task.id} | ${content} | ${due} | ${priority} | ${labels} |`);
   });
   
   return lines.join("\n");
@@ -120,15 +122,14 @@ export function formatProjectList(projects: TodoistProject[]): string {
   const lines: string[] = [];
   
   lines.push(`📁 **Your Projects** (${projects.length} total)\n`);
-  lines.push("| # | Project | Color | View | Shared | Favorite |");
-  lines.push("|---|---------|-------|------|--------|----------|");
+  lines.push("| # | ID | Project | Color | View | Shared |");
+  lines.push("|---|-----|---------|-------|------|--------|");
   
   projects.forEach((project, index) => {
     const icon = project.is_inbox_project ? "📥" : "📁";
     const shared = project.is_shared ? "✅" : "—";
-    const favorite = project.is_favorite ? "⭐" : "—";
     
-    lines.push(`| ${index + 1} | ${icon} ${project.name} | ${project.color} | ${project.view_style} | ${shared} | ${favorite} |`);
+    lines.push(`| ${index + 1} | ${project.id} | ${icon} ${project.name} | ${project.color} | ${project.view_style} | ${shared} |`);
   });
   
   return lines.join("\n");
@@ -149,11 +150,11 @@ export function formatSectionList(sections: TodoistSection[], projectName?: stri
   const title = projectName ? `Sections in "${projectName}"` : "Sections";
   
   lines.push(`📂 **${title}** (${sections.length} total)\n`);
-  lines.push("| # | Section Name |");
-  lines.push("|---|--------------|");
+  lines.push("| # | ID | Section Name |");
+  lines.push("|---|-----|--------------|");
   
   sections.forEach((section, index) => {
-    lines.push(`| ${index + 1} | ${section.name} |`);
+    lines.push(`| ${index + 1} | ${section.id} | ${section.name} |`);
   });
   
   return lines.join("\n");
@@ -174,12 +175,12 @@ export function formatLabelList(labels: TodoistLabel[]): string {
   const lines: string[] = [];
   
   lines.push(`🏷️ **Your Labels** (${labels.length} total)\n`);
-  lines.push("| # | Label | Color | Favorite |");
-  lines.push("|---|-------|-------|----------|");
+  lines.push("| # | ID | Label | Color | Favorite |");
+  lines.push("|---|-----|-------|-------|----------|");
   
   labels.forEach((label, index) => {
     const favorite = label.is_favorite ? "⭐" : "—";
-    lines.push(`| ${index + 1} | ${label.name} | ${label.color} | ${favorite} |`);
+    lines.push(`| ${index + 1} | ${label.id} | ${label.name} | ${label.color} | ${favorite} |`);
   });
   
   return lines.join("\n");
@@ -188,7 +189,7 @@ export function formatLabelList(labels: TodoistLabel[]): string {
 // Format a single comment
 export function formatComment(comment: TodoistComment): string {
   const date = new Date(comment.posted_at).toLocaleString();
-  return `💬 **Comment** (${date})\n   ${comment.content}`;
+  return `💬 **Comment** (ID: ${comment.id}, ${date})\n   ${comment.content}`;
 }
 
 // Format a list of comments
@@ -200,10 +201,15 @@ export function formatCommentList(comments: TodoistComment[]): string {
   const lines: string[] = [];
   
   lines.push(`💬 **Comments** (${comments.length} total)\n`);
+  lines.push("| # | ID | Date | Content |");
+  lines.push("|---|-----|------|---------|");
   
   comments.forEach((comment, index) => {
     const date = new Date(comment.posted_at).toLocaleDateString();
-    lines.push(`${index + 1}. **${date}**: ${comment.content}`);
+    const content = comment.content.length > 50 
+      ? comment.content.substring(0, 47) + "..." 
+      : comment.content;
+    lines.push(`| ${index + 1} | ${comment.id} | ${date} | ${content} |`);
   });
   
   return lines.join("\n");
@@ -220,6 +226,7 @@ export function formatCreatedTask(task: TodoistTask): string {
   const lines: string[] = [];
   
   lines.push(`✅ **Task Created Successfully!**\n`);
+  lines.push(`🆔 Task ID: ${task.id}`);
   lines.push(`📌 **${task.content}**`);
   
   if (task.description) {
@@ -249,6 +256,7 @@ export function formatCreatedProject(project: TodoistProject): string {
   const lines: string[] = [];
   
   lines.push(`✅ **Project Created Successfully!**\n`);
+  lines.push(`🆔 Project ID: ${project.id}`);
   lines.push(`📁 **${project.name}**`);
   lines.push(`🎨 Color: ${project.color}`);
   lines.push(`📋 View: ${project.view_style}`);

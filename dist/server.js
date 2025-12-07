@@ -42,7 +42,7 @@ async function getProjectName(projectId) {
 // Initialize MCP Server
 const server = new Server({
     name: "todoist-mcp-server",
-    version: "1.2.0",
+    version: "1.3.0",
 }, {
     capabilities: {
         tools: {},

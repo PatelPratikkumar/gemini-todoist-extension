@@ -6010,6 +6010,7 @@ var PRIORITY_SHORT = {
 function formatTask(task) {
   const lines = [];
   lines.push(`\u{1F4CC} **${task.content}**`);
+  lines.push(`   \u{1F194} Task ID: ${task.id}`);
   if (task.description) {
     lines.push(`   \u{1F4DD} ${task.description}`);
   }
@@ -6026,6 +6027,7 @@ function formatTask(task) {
     details.push(`\u{1F4AC} ${task.comment_count} comment${task.comment_count > 1 ? "s" : ""}`);
   }
   lines.push(`   ${details.join(" | ")}`);
+  lines.push(`   \u{1F517} ${task.url}`);
   return lines.join("\n");
 }
 function formatTaskList(tasks, title) {
@@ -6035,14 +6037,14 @@ function formatTaskList(tasks, title) {
   const lines = [];
   lines.push(`\u{1F4CB} **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})
 `);
-  lines.push("| # | Task | Due | Priority | Labels |");
-  lines.push("|---|------|-----|----------|--------|");
+  lines.push("| # | ID | Task | Due | Priority | Labels |");
+  lines.push("|---|-----|------|-----|----------|--------|");
   tasks.forEach((task, index) => {
     const due = task.due ? task.due.datetime ? new Date(task.due.datetime).toLocaleDateString() : task.due.date : "\u2014";
     const priority = PRIORITY_SHORT[task.priority] || "\u26AA P4";
     const labels = task.labels?.length ? task.labels.join(", ") : "\u2014";
-    const content = task.content.length > 40 ? task.content.substring(0, 37) + "..." : task.content;
-    lines.push(`| ${index + 1} | ${content} | ${due} | ${priority} | ${labels} |`);
+    const content = task.content.length > 35 ? task.content.substring(0, 32) + "..." : task.content;
+    lines.push(`| ${index + 1} | ${task.id} | ${content} | ${due} | ${priority} | ${labels} |`);
   });
   return lines.join("\n");
 }
@@ -6073,13 +6075,12 @@ function formatProjectList(projects) {
   const lines = [];
   lines.push(`\u{1F4C1} **Your Projects** (${projects.length} total)
 `);
-  lines.push("| # | Project | Color | View | Shared | Favorite |");
-  lines.push("|---|---------|-------|------|--------|----------|");
+  lines.push("| # | ID | Project | Color | View | Shared |");
+  lines.push("|---|-----|---------|-------|------|--------|");
   projects.forEach((project, index) => {
     const icon = project.is_inbox_project ? "\u{1F4E5}" : "\u{1F4C1}";
     const shared = project.is_shared ? "\u2705" : "\u2014";
-    const favorite = project.is_favorite ? "\u2B50" : "\u2014";
-    lines.push(`| ${index + 1} | ${icon} ${project.name} | ${project.color} | ${project.view_style} | ${shared} | ${favorite} |`);
+    lines.push(`| ${index + 1} | ${project.id} | ${icon} ${project.name} | ${project.color} | ${project.view_style} | ${shared} |`);
   });
   return lines.join("\n");
 }
@@ -6091,10 +6092,10 @@ function formatSectionList(sections, projectName) {
   const title = projectName ? `Sections in "${projectName}"` : "Sections";
   lines.push(`\u{1F4C2} **${title}** (${sections.length} total)
 `);
-  lines.push("| # | Section Name |");
-  lines.push("|---|--------------|");
+  lines.push("| # | ID | Section Name |");
+  lines.push("|---|-----|--------------|");
   sections.forEach((section, index) => {
-    lines.push(`| ${index + 1} | ${section.name} |`);
+    lines.push(`| ${index + 1} | ${section.id} | ${section.name} |`);
   });
   return lines.join("\n");
 }
@@ -6105,17 +6106,17 @@ function formatLabelList(labels) {
   const lines = [];
   lines.push(`\u{1F3F7}\uFE0F **Your Labels** (${labels.length} total)
 `);
-  lines.push("| # | Label | Color | Favorite |");
-  lines.push("|---|-------|-------|----------|");
+  lines.push("| # | ID | Label | Color | Favorite |");
+  lines.push("|---|-----|-------|-------|----------|");
   labels.forEach((label, index) => {
     const favorite = label.is_favorite ? "\u2B50" : "\u2014";
-    lines.push(`| ${index + 1} | ${label.name} | ${label.color} | ${favorite} |`);
+    lines.push(`| ${index + 1} | ${label.id} | ${label.name} | ${label.color} | ${favorite} |`);
   });
   return lines.join("\n");
 }
 function formatComment(comment) {
   const date = new Date(comment.posted_at).toLocaleString();
-  return `\u{1F4AC} **Comment** (${date})
+  return `\u{1F4AC} **Comment** (ID: ${comment.id}, ${date})
    ${comment.content}`;
 }
 function formatCommentList(comments) {
@@ -6125,9 +6126,12 @@ function formatCommentList(comments) {
   const lines = [];
   lines.push(`\u{1F4AC} **Comments** (${comments.length} total)
 `);
+  lines.push("| # | ID | Date | Content |");
+  lines.push("|---|-----|------|---------|");
   comments.forEach((comment, index) => {
     const date = new Date(comment.posted_at).toLocaleDateString();
-    lines.push(`${index + 1}. **${date}**: ${comment.content}`);
+    const content = comment.content.length > 50 ? comment.content.substring(0, 47) + "..." : comment.content;
+    lines.push(`| ${index + 1} | ${comment.id} | ${date} | ${content} |`);
   });
   return lines.join("\n");
 }
@@ -6135,6 +6139,7 @@ function formatCreatedTask(task) {
   const lines = [];
   lines.push(`\u2705 **Task Created Successfully!**
 `);
+  lines.push(`\u{1F194} Task ID: ${task.id}`);
   lines.push(`\u{1F4CC} **${task.content}**`);
   if (task.description) {
     lines.push(`\u{1F4DD} ${task.description}`);
@@ -6154,6 +6159,7 @@ function formatCreatedProject(project) {
   const lines = [];
   lines.push(`\u2705 **Project Created Successfully!**
 `);
+  lines.push(`\u{1F194} Project ID: ${project.id}`);
   lines.push(`\u{1F4C1} **${project.name}**`);
   lines.push(`\u{1F3A8} Color: ${project.color}`);
   lines.push(`\u{1F4CB} View: ${project.view_style}`);
@@ -6200,7 +6206,7 @@ async function getProjectName(projectId) {
 }
 var server = new Server({
   name: "todoist-mcp-server",
-  version: "1.2.0"
+  version: "1.3.0"
 }, {
   capabilities: {
     tools: {}
