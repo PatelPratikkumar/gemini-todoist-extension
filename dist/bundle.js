@@ -6138,21 +6138,55 @@ function formatTask(task) {
   lines.push(`   \u{1F517} ${task.url}`);
   return lines.join("\n");
 }
+function buildTaskTree(tasks) {
+  const taskMap = /* @__PURE__ */ new Map();
+  const roots = [];
+  tasks.forEach((task) => {
+    taskMap.set(task.id, { task, children: [] });
+  });
+  tasks.forEach((task) => {
+    const node = taskMap.get(task.id);
+    if (task.parent_id && taskMap.has(task.parent_id)) {
+      const parent = taskMap.get(task.parent_id);
+      parent.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+  const sortNodes = (nodes) => {
+    nodes.sort((a, b) => a.task.order - b.task.order);
+    nodes.forEach((node) => sortNodes(node.children));
+  };
+  sortNodes(roots);
+  return roots;
+}
+function renderTaskNode(node, indentLevel = 0) {
+  const lines = [];
+  const task = node.task;
+  const indent = "  ".repeat(indentLevel);
+  const bullet = "-";
+  const priorityIcon = PRIORITY_SHORT[task.priority] || "\u26AA P4";
+  const due = task.due ? ` \u{1F4C5} ${task.due.datetime ? new Date(task.due.datetime).toLocaleDateString() : task.due.date}` : "";
+  const labels = task.labels && task.labels.length > 0 ? ` \u{1F3F7}\uFE0F ${task.labels.join(", ")}` : "";
+  lines.push(`${indent}${bullet} ${priorityIcon} **${task.content}** \`ID: ${task.id}\`${due}${labels}`);
+  if (task.description) {
+    lines.push(`${indent}    \u{1F4DD} _${task.description.split("\n")[0]}${task.description.includes("\n") ? "..." : ""}_`);
+  }
+  node.children.forEach((child) => {
+    lines.push(...renderTaskNode(child, indentLevel + 1));
+  });
+  return lines;
+}
 function formatTaskList(tasks, title) {
   if (tasks.length === 0) {
     return "\u{1F4CB} No tasks found.";
   }
+  const tree = buildTaskTree(tasks);
   const lines = [];
-  lines.push(`\u{1F4CB} **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})
-`);
-  lines.push("| # | ID | Task | Due | Priority | Labels |");
-  lines.push("|---|-----|------|-----|----------|--------|");
-  tasks.forEach((task, index) => {
-    const due = task.due ? task.due.datetime ? new Date(task.due.datetime).toLocaleDateString() : task.due.date : "\u2014";
-    const priority = PRIORITY_SHORT[task.priority] || "\u26AA P4";
-    const labels = task.labels?.length ? task.labels.join(", ") : "\u2014";
-    const content = task.content.length > 35 ? task.content.substring(0, 32) + "..." : task.content;
-    lines.push(`| ${index + 1} | ${task.id} | ${content} | ${due} | ${priority} | ${labels} |`);
+  lines.push(`\u{1F4CB} **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})`);
+  lines.push("");
+  tree.forEach((node) => {
+    lines.push(...renderTaskNode(node));
   });
   return lines.join("\n");
 }

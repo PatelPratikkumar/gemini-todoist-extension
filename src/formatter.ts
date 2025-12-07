@@ -56,33 +56,93 @@ export function formatTask(task: TodoistTask): string {
   return lines.join("\n");
 }
 
-// Format a list of tasks as a table
+// Helper interface for tree structure
+interface TaskNode {
+  task: TodoistTask;
+  children: TaskNode[];
+}
+
+// Build a tree from a flat list of tasks
+function buildTaskTree(tasks: TodoistTask[]): TaskNode[] {
+  const taskMap = new Map<string, TaskNode>();
+  const roots: TaskNode[] = [];
+
+  // Initialize nodes
+  tasks.forEach(task => {
+    taskMap.set(task.id, { task, children: [] });
+  });
+
+  // Build hierarchy
+  tasks.forEach(task => {
+    const node = taskMap.get(task.id)!;
+    // If parent exists in the current list, add as child
+    if (task.parent_id && taskMap.has(task.parent_id)) {
+      const parent = taskMap.get(task.parent_id)!;
+      parent.children.push(node);
+    } else {
+      // Otherwise treat as root (even if it has a parent_id that isn't in this list)
+      roots.push(node);
+    }
+  });
+
+  // Sort by order (Todoist 'order' field)
+  const sortNodes = (nodes: TaskNode[]) => {
+    nodes.sort((a, b) => a.task.order - b.task.order);
+    nodes.forEach(node => sortNodes(node.children));
+  };
+  
+  sortNodes(roots);
+  return roots;
+}
+
+// Recursive render function
+function renderTaskNode(node: TaskNode, indentLevel: number = 0): string[] {
+  const lines: string[] = [];
+  const task = node.task;
+  // Use 2 spaces for indentation to ensure markdown lists render correctly
+  const indent = "  ".repeat(indentLevel);
+  const bullet = "-"; 
+
+  const priorityIcon = PRIORITY_SHORT[task.priority] || "⚪ P4";
+  const due = task.due 
+      ? ` 📅 ${task.due.datetime ? new Date(task.due.datetime).toLocaleDateString() : task.due.date}`
+      : "";
+  
+  const labels = task.labels && task.labels.length > 0 ? ` 🏷️ ${task.labels.join(", ")}` : "";
+
+  // Main task line
+  lines.push(`${indent}${bullet} ${priorityIcon} **${task.content}** \`ID: ${task.id}\`${due}${labels}`);
+  
+  // Description (indented)
+  if (task.description) {
+     // Indent description to align with text
+     lines.push(`${indent}    📝 _${task.description.split('\n')[0]}${task.description.includes('\n') ? '...' : ''}_`);
+  }
+
+  // Render children
+  node.children.forEach(child => {
+    lines.push(...renderTaskNode(child, indentLevel + 1));
+  });
+
+  return lines;
+}
+
+// Format a list of tasks as a hierarchical list
 export function formatTaskList(tasks: TodoistTask[], title?: string): string {
   if (tasks.length === 0) {
     return "📋 No tasks found.";
   }
-  
+
+  const tree = buildTaskTree(tasks);
   const lines: string[] = [];
-  
-  lines.push(`📋 **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})\n`);
-  lines.push("| # | ID | Task | Due | Priority | Labels |");
-  lines.push("|---|-----|------|-----|----------|--------|");
-  
-  tasks.forEach((task, index) => {
-    const due = task.due 
-      ? (task.due.datetime 
-          ? new Date(task.due.datetime).toLocaleDateString() 
-          : task.due.date)
-      : "—";
-    const priority = PRIORITY_SHORT[task.priority] || "⚪ P4";
-    const labels = task.labels?.length ? task.labels.join(", ") : "—";
-    const content = task.content.length > 35 
-      ? task.content.substring(0, 32) + "..." 
-      : task.content;
-    
-    lines.push(`| ${index + 1} | ${task.id} | ${content} | ${due} | ${priority} | ${labels} |`);
+
+  lines.push(`📋 **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})`);
+  lines.push(""); // Empty line for markdown separation
+
+  tree.forEach(node => {
+    lines.push(...renderTaskNode(node));
   });
-  
+
   return lines.join("\n");
 }
 

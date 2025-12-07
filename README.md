@@ -10,6 +10,7 @@
 
 - **23 MCP Tools** covering all Todoist operations
 - **Natural Language** - "Add groceries to my shopping list for tomorrow"
+- **Hierarchical View** - See tasks and subtasks in a nested tree structure
 - **Smart Formatting** - Clean, readable output (no raw JSON!)
 - **Move with Subtasks** - Move parent tasks with all subtasks preserved
 - **Smart Confirmations** - Confirms before completing or deleting
@@ -364,6 +365,11 @@ Contributions are welcome! Please:
 ---
 
 ## 📋 Changelog
+
+### v1.6.0 (2025-12-07)
+- 🌳 **Hierarchical Task View** - Tasks are now displayed in a nested tree structure
+- 📋 Improved list formatting with indentation for subtasks
+- 👁️ Better visual organization for complex projects
 
 ### v1.5.0 (2025-12-07)
 - 🔧 **Move Task with Subtasks** - `move_task` now preserves parent-child hierarchy
