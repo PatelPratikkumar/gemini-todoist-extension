@@ -1,4 +1,4 @@
-name = "todo:reopen"
+name = "tasks:reopen"
 description = "Reopen a completed task"
 usage = "/todo:reopen [task name]"
 

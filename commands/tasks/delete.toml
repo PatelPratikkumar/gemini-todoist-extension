@@ -1,4 +1,4 @@
-name = "todo:delete"
+name = "tasks:delete"
 description = "Delete a task permanently"
 usage = "/todo:delete [task name]"
 

@@ -1,4 +1,4 @@
-name = "todo:section-create"
+name = "sections:create"
 description = "Create a new section in a project"
 usage = "/todo:section-create [name] --project PROJECT"
 

@@ -1,4 +1,4 @@
-name = "todo:label-create"
+name = "labels:create"
 description = "Create a new label"
 usage = "/todo:label-create [name] --color COLOR"
 

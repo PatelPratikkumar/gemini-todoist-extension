@@ -245,49 +245,49 @@ gemini
 #### Tasks
 | Command | Description |
 |---------|-------------|
-| `/todo:add` | Add a new task |
-| `/todo:list` | List tasks with filters |
-| `/todo:complete` | Mark task as complete |
-| `/todo:update` | Update a task |
-| `/todo:delete` | Delete a task |
-| `/todo:reopen` | Reopen completed task |
+| `/tasks:add` | Add a new task |
+| `/tasks:list` | List tasks with filters |
+| `/tasks:complete` | Mark task as complete |
+| `/tasks:update` | Update a task |
+| `/tasks:delete` | Delete a task |
+| `/tasks:reopen` | Reopen completed task |
 
 #### Projects
 | Command | Description |
 |---------|-------------|
-| `/todo:projects` | List all projects |
-| `/todo:project-create` | Create new project |
-| `/todo:project-delete` | Delete a project |
+| `/projects:list` | List all projects |
+| `/projects:create` | Create new project |
+| `/projects:delete` | Delete a project |
 
 #### Sections
 | Command | Description |
 |---------|-------------|
-| `/todo:sections` | List sections in project |
-| `/todo:section-create` | Create new section |
+| `/sections:list` | List sections in project |
+| `/sections:create` | Create new section |
 
 #### Labels
 | Command | Description |
 |---------|-------------|
-| `/todo:labels` | List all labels |
-| `/todo:label-create` | Create new label |
+| `/labels:list` | List all labels |
+| `/labels:create` | Create new label |
 
 #### Comments
 | Command | Description |
 |---------|-------------|
-| `/todo:comments` | View task comments |
-| `/todo:comment-add` | Add comment to task |
+| `/comments:list` | View task comments |
+| `/comments:add` | Add comment to task |
 
 ### Command Syntax
 
 ```bash
 # Add task with options
-/todo:add Buy milk tomorrow @Shopping !2 #groceries
+/tasks:add Buy milk tomorrow @Shopping !2 #groceries
 
 # List with filters
-/todo:list --project Work --priority 1
+/tasks:list --project Work --priority 1
 
 # Complete by name
-/todo:complete buy groceries
+/tasks:complete buy groceries
 ```
 
 ---

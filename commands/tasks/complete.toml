@@ -1,4 +1,4 @@
-name = "todo:complete"
+name = "tasks:complete"
 description = "Mark a Todoist task as complete"
 usage = "/todo:complete [task name]"
 

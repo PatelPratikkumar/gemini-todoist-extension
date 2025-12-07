@@ -1,4 +1,4 @@
-name = "todo:labels"
+name = "labels:list"
 description = "List all labels"
 usage = "/todo:labels"
 

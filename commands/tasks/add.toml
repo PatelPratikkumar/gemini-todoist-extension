@@ -1,6 +1,6 @@
-name = "todo:add"
+name = "tasks:add"
 description = "Quickly add a new Todoist task with natural language"
-usage = "/todo:add Buy groceries tomorrow @Shopping !2 #errands"
+usage = "/tasks:add Buy groceries tomorrow @Shopping !2 #errands"
 
 prompt = """
 Add a task to Todoist. Parse the input for:

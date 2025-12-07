@@ -1,4 +1,4 @@
-name = "todo:list"
+name = "tasks:list"
 description = "List Todoist tasks with optional filters"
 usage = "/todo:list [--project NAME] [--priority 1-4] [--filter QUERY]"
 

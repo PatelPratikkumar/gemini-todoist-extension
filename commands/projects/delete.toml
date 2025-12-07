@@ -1,4 +1,4 @@
-name = "todo:project-delete"
+name = "projects:delete"
 description = "Delete a project and all its tasks"
 usage = "/todo:project-delete [project name]"
 

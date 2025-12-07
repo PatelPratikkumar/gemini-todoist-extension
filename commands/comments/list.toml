@@ -1,4 +1,4 @@
-name = "todo:comments"
+name = "comments:list"
 description = "View comments on a task"
 usage = "/todo:comments [task name]"
 

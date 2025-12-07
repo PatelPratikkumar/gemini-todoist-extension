@@ -1,4 +1,4 @@
-name = "todo:update"
+name = "tasks:update"
 description = "Update an existing Todoist task"
 usage = "/todo:update [task] --content TEXT --due DATE --priority N"
 

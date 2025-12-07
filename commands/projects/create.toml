@@ -1,4 +1,4 @@
-name = "todo:project-create"
+name = "projects:create"
 description = "Create a new Todoist project"
 usage = "/todo:project-create [name] --color COLOR --view list|board"
 

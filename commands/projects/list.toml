@@ -1,4 +1,4 @@
-name = "todo:projects"
+name = "projects:list"
 description = "List all Todoist projects"
 usage = "/todo:projects"
 

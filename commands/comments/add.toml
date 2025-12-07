@@ -1,4 +1,4 @@
-name = "todo:comment-add"
+name = "comments:add"
 description = "Add a comment to a task"
 usage = "/todo:comment-add [task] --message TEXT"
 

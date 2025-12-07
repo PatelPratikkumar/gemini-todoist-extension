@@ -1,4 +1,4 @@
-name = "todo:sections"
+name = "sections:list"
 description = "List sections in a project"
 usage = "/todo:sections [project name]"
 
