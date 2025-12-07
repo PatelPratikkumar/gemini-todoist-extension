@@ -6160,22 +6160,20 @@ function buildTaskTree(tasks) {
   sortNodes(roots);
   return roots;
 }
-function renderTaskNode(node, indentLevel = 0) {
-  const lines = [];
+function buildTableRows(node, indentLevel = 0, counter) {
+  const rows = [];
   const task = node.task;
-  const indent = "  ".repeat(indentLevel);
-  const bullet = "-";
-  const priorityIcon = PRIORITY_SHORT[task.priority] || "\u26AA P4";
-  const due = task.due ? ` \u{1F4C5} ${task.due.datetime ? new Date(task.due.datetime).toLocaleDateString() : task.due.date}` : "";
-  const labels = task.labels && task.labels.length > 0 ? ` \u{1F3F7}\uFE0F ${task.labels.join(", ")}` : "";
-  lines.push(`${indent}${bullet} ${priorityIcon} **${task.content}** \`ID: ${task.id}\`${due}${labels}`);
-  if (task.description) {
-    lines.push(`${indent}    \u{1F4DD} _${task.description.split("\n")[0]}${task.description.includes("\n") ? "..." : ""}_`);
-  }
+  const indent = indentLevel > 0 ? "  ".repeat(indentLevel) : "";
+  const due = task.due ? task.due.datetime ? new Date(task.due.datetime).toLocaleDateString() : task.due.date : "\u2014";
+  const priority = PRIORITY_SHORT[task.priority] || "\u26AA P4";
+  const labels = task.labels?.length ? task.labels.join(", ") : "\u2014";
+  const content = indent + task.content;
+  rows.push(`| ${counter.value} | ${task.id} | ${content} | ${due} | ${priority} | ${labels} |`);
+  counter.value++;
   node.children.forEach((child) => {
-    lines.push(...renderTaskNode(child, indentLevel + 1));
+    rows.push(...buildTableRows(child, indentLevel + 1, counter));
   });
-  return lines;
+  return rows;
 }
 function formatTaskList(tasks, title) {
   if (tasks.length === 0) {
@@ -6183,10 +6181,13 @@ function formatTaskList(tasks, title) {
   }
   const tree = buildTaskTree(tasks);
   const lines = [];
-  lines.push(`\u{1F4CB} **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})`);
-  lines.push("");
+  lines.push(`\u{1F4CB} **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})
+`);
+  lines.push("| # | ID | Task | Due | Priority | Labels |");
+  lines.push("|---|-----|------|-----|----------|--------|");
+  const counter = { value: 1 };
   tree.forEach((node) => {
-    lines.push(...renderTaskNode(node));
+    lines.push(...buildTableRows(node, 0, counter));
   });
   return lines.join("\n");
 }

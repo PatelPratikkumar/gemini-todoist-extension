@@ -366,6 +366,11 @@ Contributions are welcome! Please:
 
 ## 📋 Changelog
 
+### v1.7.0 (2025-12-07)
+- 📊 **Hierarchical Table Format** - Tasks displayed in table with indented subtasks
+- ✨ Full task names (no truncation) with natural line wrapping
+- 🎯 Clean visual hierarchy using simple space indentation
+
 ### v1.6.0 (2025-12-07)
 - 🌳 **Hierarchical Task View** - Tasks are now displayed in a nested tree structure
 - 📋 Improved list formatting with indentation for subtasks

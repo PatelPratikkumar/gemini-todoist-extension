@@ -70,42 +70,42 @@ function buildTaskTree(tasks) {
     sortNodes(roots);
     return roots;
 }
-// Recursive render function
-function renderTaskNode(node, indentLevel = 0) {
-    const lines = [];
+// Recursive table row builder
+function buildTableRows(node, indentLevel = 0, counter) {
+    const rows = [];
     const task = node.task;
-    // Use 2 spaces for indentation to ensure markdown lists render correctly
-    const indent = "  ".repeat(indentLevel);
-    const bullet = "-";
-    const priorityIcon = PRIORITY_SHORT[task.priority] || "⚪ P4";
+    // Create indentation for nested tasks (using simple spaces for visual hierarchy)
+    const indent = indentLevel > 0 ? "  ".repeat(indentLevel) : "";
     const due = task.due
-        ? ` 📅 ${task.due.datetime ? new Date(task.due.datetime).toLocaleDateString() : task.due.date}`
-        : "";
-    const labels = task.labels && task.labels.length > 0 ? ` 🏷️ ${task.labels.join(", ")}` : "";
-    // Main task line
-    lines.push(`${indent}${bullet} ${priorityIcon} **${task.content}** \`ID: ${task.id}\`${due}${labels}`);
-    // Description (indented)
-    if (task.description) {
-        // Indent description to align with text
-        lines.push(`${indent}    📝 _${task.description.split('\n')[0]}${task.description.includes('\n') ? '...' : ''}_`);
-    }
-    // Render children
+        ? (task.due.datetime
+            ? new Date(task.due.datetime).toLocaleDateString()
+            : task.due.date)
+        : "—";
+    const priority = PRIORITY_SHORT[task.priority] || "⚪ P4";
+    const labels = task.labels?.length ? task.labels.join(", ") : "—";
+    const content = indent + task.content;
+    // Add row for current task
+    rows.push(`| ${counter.value} | ${task.id} | ${content} | ${due} | ${priority} | ${labels} |`);
+    counter.value++;
+    // Add rows for children
     node.children.forEach(child => {
-        lines.push(...renderTaskNode(child, indentLevel + 1));
+        rows.push(...buildTableRows(child, indentLevel + 1, counter));
     });
-    return lines;
+    return rows;
 }
-// Format a list of tasks as a hierarchical list
+// Format a list of tasks as a hierarchical table
 export function formatTaskList(tasks, title) {
     if (tasks.length === 0) {
         return "📋 No tasks found.";
     }
     const tree = buildTaskTree(tasks);
     const lines = [];
-    lines.push(`📋 **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})`);
-    lines.push(""); // Empty line for markdown separation
+    lines.push(`📋 **${title || "Tasks"}** (${tasks.length} item${tasks.length > 1 ? "s" : ""})\n`);
+    lines.push("| # | ID | Task | Due | Priority | Labels |");
+    lines.push("|---|-----|------|-----|----------|--------|");
+    const counter = { value: 1 };
     tree.forEach(node => {
-        lines.push(...renderTaskNode(node));
+        lines.push(...buildTableRows(node, 0, counter));
     });
     return lines.join("\n");
 }
