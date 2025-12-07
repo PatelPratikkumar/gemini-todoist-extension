@@ -161,13 +161,21 @@ echo $TODOIST_API_TOKEN
 
 ## 📦 Installation
 
-### Option 1: Install from GitHub (Recommended)
+### Option 1: Install from GitHub with Auto-Update (Recommended)
 
 ```bash
-gemini extensions install https://github.com/PatelPratikkumar/gemini-todoist-extension
+gemini extensions install https://github.com/PatelPratikkumar/gemini-todoist-extension --auto-update --consent
 ```
 
-### Option 2: Install from Local Clone
+This enables automatic updates when new versions are released.
+
+### Option 2: Install without Auto-Update
+
+```bash
+gemini extensions install https://github.com/PatelPratikkumar/gemini-todoist-extension --consent
+```
+
+### Option 3: Install from Local Clone (For Development)
 
 ```bash
 # Clone the repository
@@ -182,6 +190,30 @@ npm run build
 
 # Link to Gemini CLI
 gemini extensions link .
+```
+
+---
+
+## 🔄 Updates
+
+### With Auto-Update Enabled
+
+If you installed with `--auto-update`, the extension updates automatically when you start Gemini CLI.
+
+### Manual Update
+
+```bash
+# Update this extension
+gemini extensions update todoist-extension
+
+# Or update all extensions
+gemini extensions update --all
+```
+
+### Check for Updates
+
+```bash
+gemini extensions list
 ```
 
 ---
