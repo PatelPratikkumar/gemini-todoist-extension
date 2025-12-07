@@ -5,7 +5,7 @@
   "mcpServers": {
     "todoist": {
       "command": "node",
-      "args": ["dist/server.js"],
+      "args": ["dist/bundle.js"],
       "cwd": "${extensionPath}",
       "env": {
         "TODOIST_API_TOKEN": "${TODOIST_API_TOKEN}"
