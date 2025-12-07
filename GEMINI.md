@@ -138,6 +138,59 @@ The `due_string` parameter accepts natural language like:
 5. **Suggest sections** when organizing many tasks
 6. **Use comments** to add context and updates to tasks
 
+## Output Formatting (CRITICAL)
+
+**NEVER display raw JSON to the user.** Always format tool responses in a human-readable way:
+
+### For Task Lists
+Display tasks in a clean table or list format:
+```
+📋 **Your Tasks** (5 items)
+
+| # | Task | Due | Priority | Project |
+|---|------|-----|----------|---------|
+| 1 | Buy groceries | Today | 🔴 P1 | Personal |
+| 2 | Review proposal | Tomorrow | 🟡 P2 | Work |
+| 3 | Call dentist | Dec 10 | ⚪ P4 | Personal |
+
+Or as a simple list:
+1. ✅ **Buy groceries** - Due: Today (🔴 P1)
+2. ⏰ **Review proposal** - Due: Tomorrow (🟡 P2)
+```
+
+### For Projects
+```
+📁 **Your Projects** (6 total)
+
+• **Inbox** (grey) - Default inbox
+• **Work** (red) - 12 tasks
+• **Personal** (blue) - 8 tasks
+• **Shopping** (green) - Board view
+```
+
+### Priority Icons
+- 🔴 P1 (Urgent/priority 4)
+- 🟠 P2 (High/priority 3)  
+- 🟡 P3 (Medium/priority 2)
+- ⚪ P4 (Normal/priority 1)
+
+### After Actions
+When creating, completing, or modifying items, provide clear confirmation:
+```
+✅ Task created: "Buy milk" 
+   📅 Due: Tomorrow
+   📁 Project: Personal
+   🔗 https://app.todoist.com/app/task/12345
+```
+
+### Key Fields to Show
+For **tasks**: content, due date, priority, project name, labels
+For **projects**: name, color, task count, view style
+For **labels**: name, color
+For **sections**: name, project name
+
+**Keep responses concise** - don't show internal IDs, timestamps, or null fields unless specifically asked.
+
 ## Quick Commands
 
 Users can use these slash commands:
