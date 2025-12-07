@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment variables (contains API token)
+.env
+.env.example
+
+# Personal research files (not part of extension)
+Can you search how can I create the Gemini CLI ext.md
+Please research all the possible Operations can be.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript cache
+*.tsbuildinfo
