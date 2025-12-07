@@ -147,39 +147,80 @@ export class TodoistClient {
     }
     // ==================== SYNC API OPERATIONS ====================
     /**
+     * Get all subtasks of a parent task (recursive).
+     * This is needed to move tasks with their entire subtree.
+     */
+    async getSubtasks(parentId) {
+        const allTasks = await this.getTasks();
+        const subtasks = [];
+        const collectSubtasks = (pid) => {
+            const children = allTasks.filter(t => t.parent_id === pid);
+            for (const child of children) {
+                subtasks.push(child);
+                collectSubtasks(child.id); // Recursively get nested subtasks
+            }
+        };
+        collectSubtasks(parentId);
+        return subtasks;
+    }
+    /**
      * Move a task to a different project, section, or parent.
      * Uses Sync API v9 because REST API doesn't support moving tasks.
      * Only ONE of project_id, section_id, or parent_id should be specified.
+     *
+     * When moving to a project with include_subtasks=true (default),
+     * all subtasks are moved along with the parent maintaining their hierarchy.
      */
-    async moveTask(taskId, destination) {
-        // Generate UUID for the command
-        const uuid = crypto.randomUUID();
-        const command = {
+    async moveTask(taskId, destination, includeSubtasks = true) {
+        const commands = [];
+        // First, move the main task
+        const mainUuid = crypto.randomUUID();
+        commands.push({
             type: "item_move",
-            uuid: uuid,
+            uuid: mainUuid,
             args: {
                 id: taskId,
                 ...destination,
             },
-        };
+        });
+        let subtasksToMove = [];
+        // If moving to a project and includeSubtasks is true, 
+        // we need to explicitly move subtasks to maintain hierarchy
+        if (includeSubtasks && destination.project_id) {
+            subtasksToMove = await this.getSubtasks(taskId);
+            // For each subtask, move it to the same project
+            // The parent_id relationship is preserved because we're just 
+            // changing the project, not the parent
+            for (const subtask of subtasksToMove) {
+                const uuid = crypto.randomUUID();
+                commands.push({
+                    type: "item_move",
+                    uuid: uuid,
+                    args: {
+                        id: subtask.id,
+                        project_id: destination.project_id,
+                    },
+                });
+            }
+        }
         const response = await fetch(`${SYNC_API_BASE}/sync`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: `commands=${encodeURIComponent(JSON.stringify([command]))}`,
+            body: `commands=${encodeURIComponent(JSON.stringify(commands))}`,
         });
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Todoist Sync API error (${response.status}): ${errorText}`);
         }
         const result = await response.json();
-        // Check sync_status for our command
-        if (result.sync_status && result.sync_status[uuid]) {
-            const status = result.sync_status[uuid];
+        // Check sync_status for main command
+        if (result.sync_status && result.sync_status[mainUuid]) {
+            const status = result.sync_status[mainUuid];
             if (status === "ok") {
-                return { success: true };
+                return { success: true, movedCount: 1 + subtasksToMove.length };
             }
             else if (typeof status === "object" && status.error) {
                 return { success: false, error: status.error };
@@ -188,7 +229,7 @@ export class TodoistClient {
                 return { success: false, error: "Unknown error" };
             }
         }
-        return { success: true };
+        return { success: true, movedCount: 1 + subtasksToMove.length };
     }
 }
 //# sourceMappingURL=todoist-client.js.map

@@ -210,7 +210,7 @@ export const TODOIST_TOOLS = [
 
   {
     name: "move_task",
-    description: "Move a task to a different project, section, or make it a subtask of another task. Only ONE destination should be specified.",
+    description: "Move a task to a different project, section, or make it a subtask of another task. By default, all subtasks are moved along with the parent task, preserving the hierarchy. Only ONE destination should be specified.",
     inputSchema: {
       type: "object",
       properties: {
@@ -229,6 +229,10 @@ export const TODOIST_TOOLS = [
         parent_id: {
           type: "string",
           description: "Parent task ID. Move task as a subtask of this task.",
+        },
+        include_subtasks: {
+          type: "boolean",
+          description: "Whether to move all subtasks along with the parent task (default: true). Set to false to move only the specified task.",
         },
       },
       required: ["task_id"],

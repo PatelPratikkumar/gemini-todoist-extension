@@ -65,6 +65,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -115,6 +116,7 @@ export declare const TODOIST_TOOLS: ({
             duration?: undefined;
             duration_unit?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -150,6 +152,7 @@ export declare const TODOIST_TOOLS: ({
             label?: undefined;
             filter?: undefined;
             ids?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -210,6 +213,7 @@ export declare const TODOIST_TOOLS: ({
             label?: undefined;
             filter?: undefined;
             ids?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -239,6 +243,10 @@ export declare const TODOIST_TOOLS: ({
                 description: string;
             };
             parent_id: {
+                type: string;
+                description: string;
+            };
+            include_subtasks: {
                 type: string;
                 description: string;
             };
@@ -286,6 +294,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -321,6 +330,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -374,6 +384,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             order?: undefined;
             label_id?: undefined;
             comment_id?: undefined;
@@ -423,6 +434,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             order?: undefined;
             label_id?: undefined;
             comment_id?: undefined;
@@ -454,6 +466,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -489,6 +502,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -532,6 +546,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             color?: undefined;
             is_favorite?: undefined;
             view_style?: undefined;
@@ -569,6 +584,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             color?: undefined;
             is_favorite?: undefined;
             view_style?: undefined;
@@ -604,6 +620,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -652,6 +669,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             view_style?: undefined;
             label_id?: undefined;
             comment_id?: undefined;
@@ -701,6 +719,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             view_style?: undefined;
             comment_id?: undefined;
         };
@@ -734,6 +753,7 @@ export declare const TODOIST_TOOLS: ({
             label?: undefined;
             filter?: undefined;
             ids?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -770,6 +790,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -810,6 +831,7 @@ export declare const TODOIST_TOOLS: ({
             label?: undefined;
             filter?: undefined;
             ids?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;
@@ -849,6 +871,7 @@ export declare const TODOIST_TOOLS: ({
             filter?: undefined;
             ids?: undefined;
             task_id?: undefined;
+            include_subtasks?: undefined;
             name?: undefined;
             color?: undefined;
             is_favorite?: undefined;

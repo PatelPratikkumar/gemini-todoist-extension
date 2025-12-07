@@ -168,17 +168,26 @@ export declare class TodoistClient {
     }): Promise<TodoistComment>;
     deleteComment(commentId: string): Promise<void>;
     /**
+     * Get all subtasks of a parent task (recursive).
+     * This is needed to move tasks with their entire subtree.
+     */
+    getSubtasks(parentId: string): Promise<TodoistTask[]>;
+    /**
      * Move a task to a different project, section, or parent.
      * Uses Sync API v9 because REST API doesn't support moving tasks.
      * Only ONE of project_id, section_id, or parent_id should be specified.
+     *
+     * When moving to a project with include_subtasks=true (default),
+     * all subtasks are moved along with the parent maintaining their hierarchy.
      */
     moveTask(taskId: string, destination: {
         project_id?: string;
         section_id?: string;
         parent_id?: string;
-    }): Promise<{
+    }, includeSubtasks?: boolean): Promise<{
         success: boolean;
         error?: string;
+        movedCount?: number;
     }>;
 }
 //# sourceMappingURL=todoist-client.d.ts.map

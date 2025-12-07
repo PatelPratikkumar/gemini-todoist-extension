@@ -5417,44 +5417,80 @@ var TodoistClient = class {
   }
   // ==================== SYNC API OPERATIONS ====================
   /**
+   * Get all subtasks of a parent task (recursive).
+   * This is needed to move tasks with their entire subtree.
+   */
+  async getSubtasks(parentId) {
+    const allTasks = await this.getTasks();
+    const subtasks = [];
+    const collectSubtasks = (pid) => {
+      const children = allTasks.filter((t) => t.parent_id === pid);
+      for (const child of children) {
+        subtasks.push(child);
+        collectSubtasks(child.id);
+      }
+    };
+    collectSubtasks(parentId);
+    return subtasks;
+  }
+  /**
    * Move a task to a different project, section, or parent.
    * Uses Sync API v9 because REST API doesn't support moving tasks.
    * Only ONE of project_id, section_id, or parent_id should be specified.
+   *
+   * When moving to a project with include_subtasks=true (default),
+   * all subtasks are moved along with the parent maintaining their hierarchy.
    */
-  async moveTask(taskId, destination) {
-    const uuid = crypto.randomUUID();
-    const command = {
+  async moveTask(taskId, destination, includeSubtasks = true) {
+    const commands = [];
+    const mainUuid = crypto.randomUUID();
+    commands.push({
       type: "item_move",
-      uuid,
+      uuid: mainUuid,
       args: {
         id: taskId,
         ...destination
       }
-    };
+    });
+    let subtasksToMove = [];
+    if (includeSubtasks && destination.project_id) {
+      subtasksToMove = await this.getSubtasks(taskId);
+      for (const subtask of subtasksToMove) {
+        const uuid = crypto.randomUUID();
+        commands.push({
+          type: "item_move",
+          uuid,
+          args: {
+            id: subtask.id,
+            project_id: destination.project_id
+          }
+        });
+      }
+    }
     const response = await fetch(`${SYNC_API_BASE}/sync`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.token}`,
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: `commands=${encodeURIComponent(JSON.stringify([command]))}`
+      body: `commands=${encodeURIComponent(JSON.stringify(commands))}`
     });
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`Todoist Sync API error (${response.status}): ${errorText}`);
     }
     const result = await response.json();
-    if (result.sync_status && result.sync_status[uuid]) {
-      const status = result.sync_status[uuid];
+    if (result.sync_status && result.sync_status[mainUuid]) {
+      const status = result.sync_status[mainUuid];
       if (status === "ok") {
-        return { success: true };
+        return { success: true, movedCount: 1 + subtasksToMove.length };
       } else if (typeof status === "object" && status.error) {
         return { success: false, error: status.error };
       } else {
         return { success: false, error: "Unknown error" };
       }
     }
-    return { success: true };
+    return { success: true, movedCount: 1 + subtasksToMove.length };
   }
 };
 
@@ -5654,7 +5690,7 @@ var TODOIST_TOOLS = [
   },
   {
     name: "move_task",
-    description: "Move a task to a different project, section, or make it a subtask of another task. Only ONE destination should be specified.",
+    description: "Move a task to a different project, section, or make it a subtask of another task. By default, all subtasks are moved along with the parent task, preserving the hierarchy. Only ONE destination should be specified.",
     inputSchema: {
       type: "object",
       properties: {
@@ -5673,6 +5709,10 @@ var TODOIST_TOOLS = [
         parent_id: {
           type: "string",
           description: "Parent task ID. Move task as a subtask of this task."
+        },
+        include_subtasks: {
+          type: "boolean",
+          description: "Whether to move all subtasks along with the parent task (default: true). Set to false to move only the specified task."
         }
       },
       required: ["task_id"]
@@ -6274,7 +6314,7 @@ async function getProjectName(projectId) {
 }
 var server = new Server({
   name: "todoist-mcp-server",
-  version: "1.4.0"
+  version: "1.5.0"
 }, {
   capabilities: {
     tools: {}
@@ -6375,26 +6415,28 @@ ${formatTask(task)}`;
           formattedResult = "\u274C **Error:** Please specify at least one destination: project_id, section_id, or parent_id.";
           break;
         }
-        const result = await todoist.moveTask(a.task_id, destination);
+        const includeSubtasks = a.include_subtasks !== false;
+        const result = await todoist.moveTask(a.task_id, destination, includeSubtasks);
         if (result.success) {
           const task = await todoist.getTask(a.task_id);
+          const subtaskInfo = result.movedCount && result.movedCount > 1 ? ` (including ${result.movedCount - 1} subtask${result.movedCount > 2 ? "s" : ""})` : "";
           if (destination.project_id) {
             const destName = await getProjectName(destination.project_id);
-            formattedResult = `\u{1F4E6} **Task Moved!** Successfully moved to project "${destName}".
+            formattedResult = `\u{1F4E6} **Task Moved!** Successfully moved to project "${destName}"${subtaskInfo}.
 
 ${formatTask(task)}`;
           } else if (destination.section_id) {
             const section = await todoist.getSection(destination.section_id);
-            formattedResult = `\u{1F4C2} **Task Moved!** Successfully moved to section "${section.name}".
+            formattedResult = `\u{1F4C2} **Task Moved!** Successfully moved to section "${section.name}"${subtaskInfo}.
 
 ${formatTask(task)}`;
           } else if (destination.parent_id) {
             const parent = await todoist.getTask(destination.parent_id);
-            formattedResult = `\u{1F517} **Task Moved!** Now a subtask of "${parent.content}".
+            formattedResult = `\u{1F517} **Task Moved!** Now a subtask of "${parent.content}"${subtaskInfo}.
 
 ${formatTask(task)}`;
           } else {
-            formattedResult = `\u{1F4E6} **Task Moved!**
+            formattedResult = `\u{1F4E6} **Task Moved!**${subtaskInfo}
 
 ${formatTask(task)}`;
           }

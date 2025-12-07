@@ -66,7 +66,7 @@ async function getProjectName(projectId: string): Promise<string> {
 const server = new Server(
   {
     name: "todoist-mcp-server",
-    version: "1.4.0",
+    version: "1.5.0",
   },
   {
     capabilities: {
@@ -182,21 +182,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           break;
         }
 
-        const result = await todoist.moveTask(a.task_id as string, destination);
+        // include_subtasks defaults to true - moves all subtasks with the parent
+        const includeSubtasks = a.include_subtasks !== false;
+        
+        const result = await todoist.moveTask(a.task_id as string, destination, includeSubtasks);
         if (result.success) {
           // Get updated task info
           const task = await todoist.getTask(a.task_id as string);
+          const subtaskInfo = (result.movedCount && result.movedCount > 1) 
+            ? ` (including ${result.movedCount - 1} subtask${result.movedCount > 2 ? 's' : ''})` 
+            : '';
+          
           if (destination.project_id) {
             const destName = await getProjectName(destination.project_id);
-            formattedResult = `📦 **Task Moved!** Successfully moved to project "${destName}".\n\n${formatTask(task)}`;
+            formattedResult = `📦 **Task Moved!** Successfully moved to project "${destName}"${subtaskInfo}.\n\n${formatTask(task)}`;
           } else if (destination.section_id) {
             const section = await todoist.getSection(destination.section_id);
-            formattedResult = `📂 **Task Moved!** Successfully moved to section "${section.name}".\n\n${formatTask(task)}`;
+            formattedResult = `📂 **Task Moved!** Successfully moved to section "${section.name}"${subtaskInfo}.\n\n${formatTask(task)}`;
           } else if (destination.parent_id) {
             const parent = await todoist.getTask(destination.parent_id);
-            formattedResult = `🔗 **Task Moved!** Now a subtask of "${parent.content}".\n\n${formatTask(task)}`;
+            formattedResult = `🔗 **Task Moved!** Now a subtask of "${parent.content}"${subtaskInfo}.\n\n${formatTask(task)}`;
           } else {
-            formattedResult = `📦 **Task Moved!**\n\n${formatTask(task)}`;
+            formattedResult = `📦 **Task Moved!**${subtaskInfo}\n\n${formatTask(task)}`;
           }
         } else {
           formattedResult = `❌ **Move Failed:** ${result.error}`;
