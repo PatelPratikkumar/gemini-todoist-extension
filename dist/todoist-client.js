@@ -1,8 +1,9 @@
 /**
  * Todoist API Client
- * Direct HTTP client for Todoist REST API v2
+ * Direct HTTP client for Todoist REST API v2 and Sync API v9
  */
 const API_BASE = "https://api.todoist.com/rest/v2";
+const SYNC_API_BASE = "https://api.todoist.com/sync/v9";
 export class TodoistClient {
     token;
     constructor(token) {
@@ -143,6 +144,51 @@ export class TodoistClient {
     }
     async deleteComment(commentId) {
         await this.request("DELETE", `/comments/${commentId}`);
+    }
+    // ==================== SYNC API OPERATIONS ====================
+    /**
+     * Move a task to a different project, section, or parent.
+     * Uses Sync API v9 because REST API doesn't support moving tasks.
+     * Only ONE of project_id, section_id, or parent_id should be specified.
+     */
+    async moveTask(taskId, destination) {
+        // Generate UUID for the command
+        const uuid = crypto.randomUUID();
+        const command = {
+            type: "item_move",
+            uuid: uuid,
+            args: {
+                id: taskId,
+                ...destination,
+            },
+        };
+        const response = await fetch(`${SYNC_API_BASE}/sync`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `commands=${encodeURIComponent(JSON.stringify([command]))}`,
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Todoist Sync API error (${response.status}): ${errorText}`);
+        }
+        const result = await response.json();
+        // Check sync_status for our command
+        if (result.sync_status && result.sync_status[uuid]) {
+            const status = result.sync_status[uuid];
+            if (status === "ok") {
+                return { success: true };
+            }
+            else if (typeof status === "object" && status.error) {
+                return { success: false, error: status.error };
+            }
+            else {
+                return { success: false, error: "Unknown error" };
+            }
+        }
+        return { success: true };
     }
 }
 //# sourceMappingURL=todoist-client.js.map

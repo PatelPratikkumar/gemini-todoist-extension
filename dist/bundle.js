@@ -5275,6 +5275,7 @@ var StdioServerTransport = class {
 
 // dist/todoist-client.js
 var API_BASE = "https://api.todoist.com/rest/v2";
+var SYNC_API_BASE = "https://api.todoist.com/sync/v9";
 var TodoistClient = class {
   token;
   constructor(token) {
@@ -5414,11 +5415,52 @@ var TodoistClient = class {
   async deleteComment(commentId) {
     await this.request("DELETE", `/comments/${commentId}`);
   }
+  // ==================== SYNC API OPERATIONS ====================
+  /**
+   * Move a task to a different project, section, or parent.
+   * Uses Sync API v9 because REST API doesn't support moving tasks.
+   * Only ONE of project_id, section_id, or parent_id should be specified.
+   */
+  async moveTask(taskId, destination) {
+    const uuid = crypto.randomUUID();
+    const command = {
+      type: "item_move",
+      uuid,
+      args: {
+        id: taskId,
+        ...destination
+      }
+    };
+    const response = await fetch(`${SYNC_API_BASE}/sync`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: `commands=${encodeURIComponent(JSON.stringify([command]))}`
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Todoist Sync API error (${response.status}): ${errorText}`);
+    }
+    const result = await response.json();
+    if (result.sync_status && result.sync_status[uuid]) {
+      const status = result.sync_status[uuid];
+      if (status === "ok") {
+        return { success: true };
+      } else if (typeof status === "object" && status.error) {
+        return { success: false, error: status.error };
+      } else {
+        return { success: false, error: "Unknown error" };
+      }
+    }
+    return { success: true };
+  }
 };
 
 // dist/tools.js
 var TODOIST_TOOLS = [
-  // ==================== TASK TOOLS (6) ====================
+  // ==================== TASK TOOLS (7) ====================
   {
     name: "create_task",
     description: "Create a new task in Todoist. Supports rich options like due dates, priority, labels, and descriptions.",
@@ -5605,6 +5647,32 @@ var TODOIST_TOOLS = [
         task_id: {
           type: "string",
           description: "The task ID to delete."
+        }
+      },
+      required: ["task_id"]
+    }
+  },
+  {
+    name: "move_task",
+    description: "Move a task to a different project, section, or make it a subtask of another task. Only ONE destination should be specified.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        task_id: {
+          type: "string",
+          description: "The task ID to move."
+        },
+        project_id: {
+          type: "string",
+          description: "Destination project ID. Move task to this project's root."
+        },
+        section_id: {
+          type: "string",
+          description: "Destination section ID. Move task to this section."
+        },
+        parent_id: {
+          type: "string",
+          description: "Parent task ID. Move task as a subtask of this task."
         }
       },
       required: ["task_id"]
@@ -6206,7 +6274,7 @@ async function getProjectName(projectId) {
 }
 var server = new Server({
   name: "todoist-mcp-server",
-  version: "1.3.0"
+  version: "1.4.0"
 }, {
   capabilities: {
     tools: {}
@@ -6293,6 +6361,46 @@ ${formatTask(task)}`;
       case "delete_task": {
         await todoist.deleteTask(a.task_id);
         formattedResult = "\u{1F5D1}\uFE0F **Task Deleted!** It's gone forever.";
+        break;
+      }
+      case "move_task": {
+        const destination = {};
+        if (a.project_id)
+          destination.project_id = a.project_id;
+        if (a.section_id)
+          destination.section_id = a.section_id;
+        if (a.parent_id)
+          destination.parent_id = a.parent_id;
+        if (Object.keys(destination).length === 0) {
+          formattedResult = "\u274C **Error:** Please specify at least one destination: project_id, section_id, or parent_id.";
+          break;
+        }
+        const result = await todoist.moveTask(a.task_id, destination);
+        if (result.success) {
+          const task = await todoist.getTask(a.task_id);
+          if (destination.project_id) {
+            const destName = await getProjectName(destination.project_id);
+            formattedResult = `\u{1F4E6} **Task Moved!** Successfully moved to project "${destName}".
+
+${formatTask(task)}`;
+          } else if (destination.section_id) {
+            const section = await todoist.getSection(destination.section_id);
+            formattedResult = `\u{1F4C2} **Task Moved!** Successfully moved to section "${section.name}".
+
+${formatTask(task)}`;
+          } else if (destination.parent_id) {
+            const parent = await todoist.getTask(destination.parent_id);
+            formattedResult = `\u{1F517} **Task Moved!** Now a subtask of "${parent.content}".
+
+${formatTask(task)}`;
+          } else {
+            formattedResult = `\u{1F4E6} **Task Moved!**
+
+${formatTask(task)}`;
+          }
+        } else {
+          formattedResult = `\u274C **Move Failed:** ${result.error}`;
+        }
         break;
       }
       // ==================== PROJECTS ====================

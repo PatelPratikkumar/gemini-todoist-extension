@@ -1,6 +1,6 @@
 /**
  * Todoist API Client
- * Direct HTTP client for Todoist REST API v2
+ * Direct HTTP client for Todoist REST API v2 and Sync API v9
  */
 export interface TodoistTask {
     id: string;
@@ -167,5 +167,18 @@ export declare class TodoistClient {
         content: string;
     }): Promise<TodoistComment>;
     deleteComment(commentId: string): Promise<void>;
+    /**
+     * Move a task to a different project, section, or parent.
+     * Uses Sync API v9 because REST API doesn't support moving tasks.
+     * Only ONE of project_id, section_id, or parent_id should be specified.
+     */
+    moveTask(taskId: string, destination: {
+        project_id?: string;
+        section_id?: string;
+        parent_id?: string;
+    }): Promise<{
+        success: boolean;
+        error?: string;
+    }>;
 }
 //# sourceMappingURL=todoist-client.d.ts.map

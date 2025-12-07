@@ -1,9 +1,10 @@
 /**
  * Todoist API Client
- * Direct HTTP client for Todoist REST API v2
+ * Direct HTTP client for Todoist REST API v2 and Sync API v9
  */
 
 const API_BASE = "https://api.todoist.com/rest/v2";
+const SYNC_API_BASE = "https://api.todoist.com/sync/v9";
 
 export interface TodoistTask {
   id: string;
@@ -335,5 +336,63 @@ export class TodoistClient {
 
   async deleteComment(commentId: string): Promise<void> {
     await this.request<void>("DELETE", `/comments/${commentId}`);
+  }
+
+  // ==================== SYNC API OPERATIONS ====================
+
+  /**
+   * Move a task to a different project, section, or parent.
+   * Uses Sync API v9 because REST API doesn't support moving tasks.
+   * Only ONE of project_id, section_id, or parent_id should be specified.
+   */
+  async moveTask(
+    taskId: string,
+    destination: {
+      project_id?: string;
+      section_id?: string;
+      parent_id?: string;
+    }
+  ): Promise<{ success: boolean; error?: string }> {
+    // Generate UUID for the command
+    const uuid = crypto.randomUUID();
+
+    const command = {
+      type: "item_move",
+      uuid: uuid,
+      args: {
+        id: taskId,
+        ...destination,
+      },
+    };
+
+    const response = await fetch(`${SYNC_API_BASE}/sync`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `commands=${encodeURIComponent(JSON.stringify([command]))}`,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Todoist Sync API error (${response.status}): ${errorText}`);
+    }
+
+    const result = await response.json() as { sync_status?: Record<string, string | { error?: string }> };
+    
+    // Check sync_status for our command
+    if (result.sync_status && result.sync_status[uuid]) {
+      const status = result.sync_status[uuid];
+      if (status === "ok") {
+        return { success: true };
+      } else if (typeof status === "object" && status.error) {
+        return { success: false, error: status.error };
+      } else {
+        return { success: false, error: "Unknown error" };
+      }
+    }
+
+    return { success: true };
   }
 }

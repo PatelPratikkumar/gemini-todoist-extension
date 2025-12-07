@@ -42,7 +42,7 @@ async function getProjectName(projectId) {
 // Initialize MCP Server
 const server = new Server({
     name: "todoist-mcp-server",
-    version: "1.3.0",
+    version: "1.4.0",
 }, {
     capabilities: {
         tools: {},
@@ -133,6 +133,43 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             case "delete_task": {
                 await todoist.deleteTask(a.task_id);
                 formattedResult = "🗑️ **Task Deleted!** It's gone forever.";
+                break;
+            }
+            case "move_task": {
+                const destination = {};
+                if (a.project_id)
+                    destination.project_id = a.project_id;
+                if (a.section_id)
+                    destination.section_id = a.section_id;
+                if (a.parent_id)
+                    destination.parent_id = a.parent_id;
+                if (Object.keys(destination).length === 0) {
+                    formattedResult = "❌ **Error:** Please specify at least one destination: project_id, section_id, or parent_id.";
+                    break;
+                }
+                const result = await todoist.moveTask(a.task_id, destination);
+                if (result.success) {
+                    // Get updated task info
+                    const task = await todoist.getTask(a.task_id);
+                    if (destination.project_id) {
+                        const destName = await getProjectName(destination.project_id);
+                        formattedResult = `📦 **Task Moved!** Successfully moved to project "${destName}".\n\n${formatTask(task)}`;
+                    }
+                    else if (destination.section_id) {
+                        const section = await todoist.getSection(destination.section_id);
+                        formattedResult = `📂 **Task Moved!** Successfully moved to section "${section.name}".\n\n${formatTask(task)}`;
+                    }
+                    else if (destination.parent_id) {
+                        const parent = await todoist.getTask(destination.parent_id);
+                        formattedResult = `🔗 **Task Moved!** Now a subtask of "${parent.content}".\n\n${formatTask(task)}`;
+                    }
+                    else {
+                        formattedResult = `📦 **Task Moved!**\n\n${formatTask(task)}`;
+                    }
+                }
+                else {
+                    formattedResult = `❌ **Move Failed:** ${result.error}`;
+                }
                 break;
             }
             // ==================== PROJECTS ====================

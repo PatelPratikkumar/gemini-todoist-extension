@@ -67,13 +67,14 @@ User input often comes from **voice transcription** services. Expect:
 
 ## Available Tools (22 Total)
 
-### Task Management (7 tools)
+### Task Management (8 tools)
 | Tool | Purpose |
 |------|---------|
 | `create_task` | Create new tasks with due dates, priority (1-4), labels, descriptions |
 | `get_tasks` | Retrieve tasks with filtering (project, label, section, custom filter) |
 | `get_task` | Get details of a specific task by ID |
 | `update_task` | Modify task content, due date, priority, labels |
+| `move_task` | Move task to different project, section, or make it a subtask |
 | `complete_task` | Mark task as done (recurring tasks reschedule automatically) |
 | `reopen_task` | Reopen a completed task |
 | `delete_task` | Permanently remove a task |

@@ -1,6 +1,6 @@
 {
   "name": "todoist-extension",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Full Todoist task management for Gemini CLI - manage tasks, projects, sections, labels, and comments",
   "mcpServers": {
     "todoist": {

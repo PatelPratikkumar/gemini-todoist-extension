@@ -226,6 +226,50 @@ export declare const TODOIST_TOOLS: ({
     inputSchema: {
         type: string;
         properties: {
+            task_id: {
+                type: string;
+                description: string;
+            };
+            project_id: {
+                type: string;
+                description: string;
+            };
+            section_id: {
+                type: string;
+                description: string;
+            };
+            parent_id: {
+                type: string;
+                description: string;
+            };
+            content?: undefined;
+            description?: undefined;
+            labels?: undefined;
+            priority?: undefined;
+            due_string?: undefined;
+            due_date?: undefined;
+            assignee_id?: undefined;
+            duration?: undefined;
+            duration_unit?: undefined;
+            label?: undefined;
+            filter?: undefined;
+            ids?: undefined;
+            name?: undefined;
+            color?: undefined;
+            is_favorite?: undefined;
+            view_style?: undefined;
+            order?: undefined;
+            label_id?: undefined;
+            comment_id?: undefined;
+        };
+        required: string[];
+    };
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: string;
+        properties: {
             content?: undefined;
             description?: undefined;
             project_id?: undefined;

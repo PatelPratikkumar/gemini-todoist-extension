@@ -3,7 +3,7 @@
  * Defines all 22 tools for complete Todoist integration
  */
 export const TODOIST_TOOLS = [
-    // ==================== TASK TOOLS (6) ====================
+    // ==================== TASK TOOLS (7) ====================
     {
         name: "create_task",
         description: "Create a new task in Todoist. Supports rich options like due dates, priority, labels, and descriptions.",
@@ -190,6 +190,32 @@ export const TODOIST_TOOLS = [
                 task_id: {
                     type: "string",
                     description: "The task ID to delete.",
+                },
+            },
+            required: ["task_id"],
+        },
+    },
+    {
+        name: "move_task",
+        description: "Move a task to a different project, section, or make it a subtask of another task. Only ONE destination should be specified.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                task_id: {
+                    type: "string",
+                    description: "The task ID to move.",
+                },
+                project_id: {
+                    type: "string",
+                    description: "Destination project ID. Move task to this project's root.",
+                },
+                section_id: {
+                    type: "string",
+                    description: "Destination section ID. Move task to this section.",
+                },
+                parent_id: {
+                    type: "string",
+                    description: "Parent task ID. Move task as a subtask of this task.",
                 },
             },
             required: ["task_id"],
