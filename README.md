@@ -8,8 +8,10 @@
 
 ## ✨ Features
 
-- **22 MCP Tools** covering all Todoist operations
+- **23 MCP Tools** covering all Todoist operations
 - **Natural Language** - "Add groceries to my shopping list for tomorrow"
+- **Smart Formatting** - Clean, readable output (no raw JSON!)
+- **Move with Subtasks** - Move parent tasks with all subtasks preserved
 - **Smart Confirmations** - Confirms before completing or deleting
 - **Organized Commands** - 15+ slash commands by category
 - **Voice-Friendly** - Handles transcription errors gracefully
@@ -18,7 +20,7 @@
 
 | Category | Operations |
 |----------|------------|
-| **Tasks** | Create, list, update, complete, reopen, delete |
+| **Tasks** | Create, list, update, move, complete, reopen, delete |
 | **Projects** | Create, list, update, delete |
 | **Sections** | Create, list, update, delete |
 | **Labels** | Create, list, update, delete |
@@ -294,31 +296,34 @@ gemini
 ```
 gemini-todoist-extension/
 ├── commands/
-│   ├── tasks/          # Task-related commands
+│   ├── tasks/              # Task-related slash commands
 │   │   ├── add.toml
 │   │   ├── list.toml
 │   │   ├── complete.toml
 │   │   ├── update.toml
 │   │   ├── delete.toml
 │   │   └── reopen.toml
-│   ├── projects/       # Project commands
+│   ├── projects/           # Project slash commands
 │   │   ├── list.toml
 │   │   ├── create.toml
 │   │   └── delete.toml
-│   ├── sections/       # Section commands
+│   ├── sections/           # Section slash commands
 │   │   ├── list.toml
 │   │   └── create.toml
-│   ├── labels/         # Label commands
+│   ├── labels/             # Label slash commands
 │   │   ├── list.toml
 │   │   └── create.toml
-│   └── comments/       # Comment commands
+│   └── comments/           # Comment slash commands
 │       ├── list.toml
 │       └── add.toml
 ├── src/
-│   ├── server.ts       # MCP server entry point
-│   ├── todoist-client.ts   # Todoist API client
-│   └── tools.ts        # Tool definitions
-├── GEMINI.md           # AI context instructions
+│   ├── server.ts           # MCP server entry point & tool handlers
+│   ├── todoist-client.ts   # Todoist REST & Sync API client
+│   ├── formatter.ts        # Human-readable output formatting
+│   └── tools.ts            # 23 MCP tool definitions
+├── dist/                   # Compiled JavaScript output
+│   └── bundle.js           # Bundled extension (esbuild)
+├── GEMINI.md               # AI context instructions
 ├── gemini-extension.json   # Extension manifest
 ├── package.json
 ├── tsconfig.json
@@ -355,6 +360,42 @@ Contributions are welcome! Please:
 2. Create a feature branch
 3. Make your changes
 4. Submit a pull request
+
+---
+
+## 📋 Changelog
+
+### v1.5.0 (2025-12-07)
+- 🔧 **Move Task with Subtasks** - `move_task` now preserves parent-child hierarchy
+- 📦 Subtasks are automatically moved with their parent task
+- ✨ Added `include_subtasks` option (default: true)
+- 📊 Shows count of moved subtasks in output
+
+### v1.4.0 (2025-12-07)
+- ✨ **New `move_task` Tool** - Move tasks between projects, sections, or make subtasks
+- 🔄 Uses Todoist Sync API for moving (REST API doesn't support this)
+
+### v1.3.0 (2025-12-07)
+- 📋 **Task IDs in Output** - All list outputs now include IDs for reference
+- 🎨 Improved table formatting with ID columns
+
+### v1.2.0 (2025-12-07)
+- 🎨 **Server-Side Formatting** - Clean, human-readable output instead of raw JSON
+- 📊 Beautiful tables for tasks, projects, sections, labels, comments
+- 🔴🟠🟡⚪ Priority emojis for visual clarity
+
+### v1.1.0 (2025-12-06)
+- 📦 Added esbuild bundling for smaller extension size
+- 🔧 Fixed TypeScript compilation issues
+- 📁 Extension now works properly from GitHub installation
+
+### v1.0.0 (2025-12-06)
+- 🎉 **Initial Release**
+- 22 MCP tools for complete Todoist integration
+- 15 slash commands for quick access
+- Full support for tasks, projects, sections, labels, and comments
+- Natural language processing for voice-friendly input
+- System environment variable for secure API token storage
 
 ---
 
